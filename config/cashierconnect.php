@@ -24,5 +24,6 @@ return [
 
     'currency' => env('CASHIER_CONNECT_CURRENCY', 'usd')
 
-
+    'subscription_model' => Lanos\CashierConnect\Models\ConnectSubscription::class;
+    'subscription_item_model' => Lanos\CashierConnect\Models\ConnectSubscriptionItem::class;
 ];

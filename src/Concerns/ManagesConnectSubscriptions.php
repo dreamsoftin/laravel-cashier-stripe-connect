@@ -57,8 +57,9 @@ trait ManagesConnectSubscriptions
 
         // TODO REWRITE TO USE RELATIONAL CREATION
         // GENERATE DATABASE RECORD FOR SUBSCRIPTION
-        $ConnectSubscriptionRecord = ConnectSubscription::create([
+        $ConnectSubscriptionRecord = config('cashierconnect.subscription_model')::create([
             "name" => $name,
+            'is_connected_subscription' => true,
             "stripe_id" => $subscription->id,
             "stripe_status" => $subscription->status,
             "connected_price_id" => $price,
@@ -68,11 +69,12 @@ trait ManagesConnectSubscriptions
         ]);
 
         // TODO REWRITE TO USE RELATIONAL CREATION
-        $ConnectSubscriptionItemRecord = ConnectSubscriptionItem::create([
+        $ConnectSubscriptionItemRecord = config('cashierconnect.subscription_item_model')::create([
+            'type' => 'connect',
             "connected_subscription_id" => $ConnectSubscriptionRecord->id,
             "stripe_id" => $subscription->items->data[0]->id,
-            "connected_product" => $subscription->items->data[0]->price->product,
-            "connected_price" => $subscription->items->data[0]->price->id,
+            "stripe_product" => $subscription->items->data[0]->price->product,
+            "stripe_price" => $subscription->items->data[0]->price->id,
             "quantity" => $quantity
         ]);
 

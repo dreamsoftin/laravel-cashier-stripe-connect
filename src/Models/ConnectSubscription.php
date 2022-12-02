@@ -13,10 +13,10 @@ class ConnectSubscription extends Model
     use StripeEntity;
 
     protected $guarded = [];
-    protected $table = 'connected_subscriptions';
+    protected $table = 'subscriptions';
 
     public function items(){
-        return $this->hasMany(ConnectSubscriptionItem::class, 'connected_subscription_id', 'id');
+        return $this->hasMany(config('cashierconnect.subscription_item_model'), 'connected_subscription_id', 'id');
     }
 
     /**
