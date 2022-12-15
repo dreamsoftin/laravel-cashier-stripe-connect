@@ -22,8 +22,8 @@ return [
 
     /** Used when the model doesn't have a currency assigned to it or the currency isn't provided by the function */
 
-    'currency' => env('CASHIER_CONNECT_CURRENCY', 'usd')
+    'currency' => env('CASHIER_CONNECT_CURRENCY', 'usd'),
 
-    'subscription_model' => Lanos\CashierConnect\Models\ConnectSubscription::class;
-    'subscription_item_model' => Lanos\CashierConnect\Models\ConnectSubscriptionItem::class;
+    'subscription_model' => Lanos\CashierConnect\Models\ConnectSubscription::class,
+    'subscription_item_model' => Lanos\CashierConnect\Models\ConnectSubscriptionItem::class,
 ];

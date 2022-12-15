@@ -65,13 +65,13 @@ trait ManagesConnectSubscriptions
             "connected_price_id" => $price,
             "ends_at" => Date::parse($subscription->current_period_end),
             "stripe_customer_id" => $customerID,
-            "stripe_account_Id" => $this->stripeAccountId()
+            "stripe_account_id" => $this->stripeAccountId()
         ]);
 
         // TODO REWRITE TO USE RELATIONAL CREATION
         $ConnectSubscriptionItemRecord = config('cashierconnect.subscription_item_model')::create([
             'type' => 'connect',
-            "connected_subscription_id" => $ConnectSubscriptionRecord->id,
+            "subscription_id" => $ConnectSubscriptionRecord->id,
             "stripe_id" => $subscription->items->data[0]->id,
             "stripe_product" => $subscription->items->data[0]->price->product,
             "stripe_price" => $subscription->items->data[0]->price->id,
@@ -80,6 +80,13 @@ trait ManagesConnectSubscriptions
 
         return $subscription;
 
+    }
+
+
+    public function cancelSubscription($subscription){
+        Subscription::update($subscription->stripe_id,[
+            'cancel_at_period_end' => true,
+          ], $this->stripeAccountOptions([], true));
     }
 
     public function getSubscriptions(){
@@ -117,7 +124,7 @@ trait ManagesConnectSubscriptions
 
         $customer->assetCustomerExists();
 
-        return $customer->stripeCustomerId();
+        return $customer->stripeCustomerIdByAccount($this->stripeAccountId());
     }
 
 

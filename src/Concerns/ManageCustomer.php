@@ -20,6 +20,13 @@ trait ManageCustomer
     {
         return $this->belongsTo(ConnectCustomer::class, $this->primaryKey, $this->getLocalIDField())->where('model', '=', get_class($this));
     }
+    /**
+     * @return mixed
+     */
+    public function stripeCustomerMappingByAccount($account_id)
+    {
+        return $this->belongsTo(ConnectCustomer::class, $this->primaryKey, $this->getLocalIDField())->where('model', '=', get_class($this))->where('stripe_account_id', '=', $account_id);
+    }
 
     /**
      * Retrieve the Stripe account ID.
@@ -30,6 +37,7 @@ trait ManageCustomer
     {
         return $this->stripeCustomerMapping->stripe_account_id;
     }
+  
 
     /**
      * Retrieve the Stripe customer ID.
@@ -40,6 +48,14 @@ trait ManageCustomer
     {
         return $this->stripeCustomerMapping->stripe_customer_id;
     }
+    public function stripeCustomerIdByAccount($account_id): ?string
+    {
+        return $this->stripeCustomerMappingByAccount($account_id)->first()->stripe_customer_id;
+    }
+    public function stripeCustomerByAccount($account_id)
+    {
+        return $this->stripeCustomerMappingByAccount($account_id)->first();
+    }
 
     /**
      * Checks if the model exists as a stripe customer
@@ -47,6 +63,9 @@ trait ManageCustomer
      */
     public function hasCustomerRecord(){
         return ($this->stripeCustomerMapping()->exists());
+    }
+    public function hasCustomerRecordForAccount($account_id){
+        return ($this->stripeCustomerMappingByAccount($account_id)->exists());
     }
 
     /**
@@ -61,7 +80,8 @@ trait ManageCustomer
     public function createStripeCustomer($connectedAccount, array $customerData = []){
 
         // Check if model already has a connected Stripe account.
-        if ($this->hasCustomerRecord()) {
+        if ($this->hasCustomerRecordForAccount($connectedAccount->stripeAccountId())) {
+
             throw new AccountAlreadyExistsException('Customer account already exists.');
         }
 

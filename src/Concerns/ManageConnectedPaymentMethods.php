@@ -24,6 +24,15 @@ trait ManageConnectedPaymentMethods
         $this->assetCustomerExists();
         return Customer::allPaymentMethods($this->stripeCustomerId(), $this->stripeAccountOptions($this->stripeAccountId()));
     }
+    /**
+     * Returns a list of payment methods for
+     * @return Collection
+     * @throws ApiErrorException
+     */
+    public function getPaymentMethodsForAccount($accountId){
+        $this->assetCustomerExists();
+        return Customer::allPaymentMethods($this->stripeCustomerId(), $this->stripeAccountOptions($accountId));
+    }
 
     /**
      * Detaches the payment method from the customer
@@ -43,6 +52,25 @@ trait ManageConnectedPaymentMethods
 
         return PaymentMethod::detach($id, $this->stripeAccountOptions($this->stripeAccountId()));
 
+    }
+
+    /**
+     * Attaches a payment method to the customer
+     * @param $id
+     * @throws ApiErrorException
+     * @throws Exception
+     */
+    public function attachPaymentMethod($id, $stripeAccountId){
+        $this->assetCustomerExists();
+
+        $method = PaymentMethod::retrieve($id, $this->stripeAccountOptions($stripeAccountId));
+
+        if($method->customer === $this->stripeCustomerIdByAccount( $stripeAccountId)){
+            return;
+            // throw new Exception('This payment method already belongs to this customer');
+        }
+
+        return   $method->attach(['customer' => $this->stripeCustomerIdByAccount( $stripeAccountId)]);
     }
 
 }
