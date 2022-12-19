@@ -84,8 +84,16 @@ trait ManagesConnectSubscriptions
 
 
     public function cancelSubscription($subscription){
+        // $stripeSubscription =  Subscription::retrieve($subscription->id);
         Subscription::update($subscription->stripe_id,[
             'cancel_at_period_end' => true,
+          ], $this->stripeAccountOptions([], true));
+    }
+
+    public function cancelSubscriptionNow($subscription){
+        $stripeSubscription = $this-> retrieveSubscriptionFromStripe($subscription->stripe_id);
+        $stripeSubscription->cancel([
+            'prorate' => true,
           ], $this->stripeAccountOptions([], true));
     }
 

@@ -82,6 +82,4 @@ trait ConnectCustomer
             throw new AccountNotFoundException('Stripe customer does not exist.');
         }
     }
-
-
 }
