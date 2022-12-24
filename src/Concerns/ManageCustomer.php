@@ -50,7 +50,7 @@ trait ManageCustomer
     }
     public function stripeCustomerIdByAccount($account_id): ?string
     {
-        return $this->stripeCustomerMappingByAccount($account_id)->first()->stripe_customer_id;
+        return $this->stripeCustomerMappingByAccount($account_id)->first()?->stripe_customer_id;
     }
     public function stripeCustomerByAccount($account_id)
     {
