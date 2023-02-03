@@ -53,7 +53,9 @@ trait ManagesConnectSubscriptions
                 ],
                 "payment_behavior" => "default_incomplete",
                 "expand" => ["latest_invoice.payment_intent"]
-            ], $this->stripeAccountOptions([], true));
+            ],
+            $this->stripeAccountOptions([], true)
+        );
 
         // TODO REWRITE TO USE RELATIONAL CREATION
         // GENERATE DATABASE RECORD FOR SUBSCRIPTION
@@ -62,6 +64,7 @@ trait ManagesConnectSubscriptions
             'is_connected_subscription' => true,
             "stripe_id" => $subscription->id,
             "stripe_status" => $subscription->status,
+            'purchased_at' => now(),
             "connected_price_id" => $price,
             "ends_at" => Date::parse($subscription->current_period_end),
             "stripe_customer_id" => $customerID,
@@ -79,25 +82,27 @@ trait ManagesConnectSubscriptions
         ]);
 
         return $subscription;
-
     }
 
 
-    public function cancelSubscription($subscription){
+    public function cancelSubscription($subscription)
+    {
         // $stripeSubscription =  Subscription::retrieve($subscription->id);
-        Subscription::update($subscription->stripe_id,[
+        Subscription::update($subscription->stripe_id, [
             'cancel_at_period_end' => true,
-          ], $this->stripeAccountOptions([], true));
+        ], $this->stripeAccountOptions([], true));
     }
 
-    public function cancelSubscriptionNow($subscription){
-        $stripeSubscription = $this-> retrieveSubscriptionFromStripe($subscription->stripe_id);
+    public function cancelSubscriptionNow($subscription)
+    {
+        $stripeSubscription = $this->retrieveSubscriptionFromStripe($subscription->stripe_id);
         $stripeSubscription->cancel([
             'prorate' => true,
-          ], $this->stripeAccountOptions([], true));
+        ], $this->stripeAccountOptions([], true));
     }
 
-    public function getSubscriptions(){
+    public function getSubscriptions()
+    {
         return $this->stripeAccountMapping->subscriptions;
     }
 
@@ -134,6 +139,4 @@ trait ManagesConnectSubscriptions
 
         return $customer->stripeCustomerIdByAccount($this->stripeAccountId());
     }
-
-
 }
